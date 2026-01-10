@@ -1,6 +1,7 @@
 import yaml
 import shutil
 import random
+import time
 from pathlib import Path
 from .services.music_provider import SpotifyProvider, YouTubeMusicProvider
 from .services.downloader import Downloader
@@ -83,6 +84,9 @@ class App:
                 path = self.downloader.download_audio(video_url, subfolder=playlist_folder_name)
                 if path:
                     audio_paths.append(path)
+                
+                # Sleep between downloads to avoid being flagged
+                time.sleep(random.uniform(3, 7))
                     
             if not audio_paths:
                 logger.error("No audio tracks downloaded.")
