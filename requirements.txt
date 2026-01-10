@@ -1,0 +1,12 @@
+typer
+spotipy
+yt-dlp
+moviepy
+google-auth-oauthlib
+google-api-python-client
+pyyaml
+python-dotenv
+requests
+beautifulsoup4
+gdown
+ytmusicapi

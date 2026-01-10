@@ -1,0 +1,45 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+*.bat
+*.vbs
+*.log
+.git - Copy
+
+
+# Virtual environments
+.venv
+.env
+
+# Configuration & Secrets
+config/client_secrets.json
+config/tokens/
+
+# Downloads & Data
+downloads/*
+!downloads/.gitkeep
+
+# Legacies & Others
+src/thumbnails/*
+!src/thumbnails/.gitkeep
+src/profiles/*
+!src/profiles/example.json
+.cache
+.python-version
+
+# Archive - Unnecessary files
+archive/**/*.m4a
+archive/**/*.mp3
+archive/**/*.mp4
+archive/**/*.jpeg
+archive/**/*.jpg
+archive/**/*.log
+archive/src/utils/*.json
+archive/src/config/**/*.json
+archive/src/THUMBNAILS/
+archive/playlist_with_trending.json
+archive/test.py

@@ -1,0 +1,42 @@
+name: Daily YouTube Music Mix
+
+on:
+  schedule:
+    # Runs at 23:50 UTC every day
+    - cron: '50 23 * * *'
+  workflow_dispatch: # Allows manual triggering for testing
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Inject Secrets
+        run: |
+          mkdir -p config/tokens
+          echo "${{ secrets.CLIENT_SECRETS_JSON }}" > config/client_secrets.json
+          echo "${{ secrets.PRIMARY_TOKEN_JSON }}" > config/tokens/primary_token.json
+          echo "${{ secrets.DOT_ENV }}" > .env
+
+      - name: Run Animation Workflow
+        run: uv run main.py run --channel primary
+        env:
+          PYTHONUNBUFFERED: 1
