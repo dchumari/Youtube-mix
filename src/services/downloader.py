@@ -26,11 +26,13 @@ class Downloader:
             ],
             "quiet": True,
             "no_warnings": True,
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         }
 
         cookie_file = Path("config/cookies.txt")
         if cookie_file.exists():
             ydl_opts["cookiefile"] = str(cookie_file)
+            logger.info("Using cookies for YouTube audio download.")
 
         return self._download(url, ydl_opts, "audio")
 
@@ -46,12 +48,13 @@ class Downloader:
             "merge_output_format": "mp4",
             "quiet": True,
             "no_warnings": True,
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         }
         
         cookie_file = Path("config/cookies.txt")
         if cookie_file.exists():
             ydl_opts["cookiefile"] = str(cookie_file)
-            logger.info("Using cookies for YouTube download.")
+            logger.info("Using cookies for YouTube video download.")
         
         return self._download(url, ydl_opts, "video")
 
