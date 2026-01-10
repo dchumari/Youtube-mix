@@ -4,7 +4,16 @@ on:
   schedule:
     # Runs at 23:50 UTC every day
     - cron: '50 23 * * *'
-  workflow_dispatch: # Allows manual triggering for testing
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: 'Channel profile to run'
+        required: true
+        default: 'primary'
+        type: choice
+        options:
+          - primary
+          - gaming
 
 jobs:
   build-and-run:
@@ -32,11 +41,15 @@ jobs:
       - name: Inject Secrets
         run: |
           mkdir -p config/tokens
-          echo "${{ secrets.CLIENT_SECRETS_JSON }}" > config/client_secrets.json
           echo "${{ secrets.PRIMARY_TOKEN_JSON }}" > config/tokens/primary_token.json
-          echo "${{ secrets.DOT_ENV }}" > .env
+          echo "${{ secrets.GAMING_TOKEN_JSON }}" > config/tokens/gaming_token.json
+          echo "${{ secrets.CLIENT_SECRETS_JSON }}" > config/client_secrets.json
+          
+          # Reconstruct .env from individual secrets for better security
+          echo "SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}" > .env
+          echo "SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}" >> .env
 
-      - name: Run Animation Workflow
-        run: uv run main.py run --channel primary
+      - name: Run Automation Workflow
+        run: uv run main.py run --channel ${{ github.event.inputs.channel || 'primary' }}
         env:
           PYTHONUNBUFFERED: 1
