@@ -14,6 +14,11 @@ on:
         options:
           - primary
           - gaming
+      dry_run:
+        description: 'Dry run (skip upload)'
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   build-and-run:
@@ -38,18 +43,28 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Inject Secrets
+      - name: Inject & Verify Secrets
         run: |
           mkdir -p config/tokens
+          # Inject
           echo "${{ secrets.PRIMARY_TOKEN_JSON }}" > config/tokens/primary_token.json
           echo "${{ secrets.GAMING_TOKEN_JSON }}" > config/tokens/gaming_token.json
           echo "${{ secrets.CLIENT_SECRETS_JSON }}" > config/client_secrets.json
-          
-          # Reconstruct .env from individual secrets for better security
           echo "SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}" > .env
           echo "SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}" >> .env
+          
+          # Verify sizes (if size is 1 byte, it likely only contains a newline/empty)
+          echo "Checking secret files..."
+          ls -l config/tokens/primary_token.json
+          ls -l config/client_secrets.json
+          ls -l .env
 
       - name: Run Automation Workflow
-        run: uv run main.py run --channel ${{ github.event.inputs.channel || 'primary' }}
+        run: |
+          DRY_ARG=""
+          if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then
+            DRY_ARG="--dry"
+          fi
+          uv run main.py run --channel ${{ github.event.inputs.channel || 'primary' }} $DRY_ARG
         env:
           PYTHONUNBUFFERED: 1
