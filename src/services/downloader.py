@@ -32,7 +32,6 @@ class Downloader:
             "extractor_args": {
                 "youtube": {
                     "player_client": ["ios", "android", "web"],
-                    "player_skip": ["webpage", "configs"],
                 }
             },
         }
@@ -61,7 +60,6 @@ class Downloader:
             "extractor_args": {
                 "youtube": {
                     "player_client": ["ios", "android", "web"],
-                    "player_skip": ["webpage", "configs"],
                 }
             },
         }
@@ -98,6 +96,18 @@ class Downloader:
                     
             except Exception as e:
                 logger.warning(f"Download attempt {attempt + 1}/{max_retries} failed for {url}: {e}")
+                
+                # If format error, try to list formats for debugging in logs
+                if "Requested format is not available" in str(e) and attempt == 0:
+                    logger.info(f"Attempting to list available formats for troubleshooting {url}...")
+                    try:
+                        debug_opts = opts.copy()
+                        debug_opts.update({"listformats": True, "quiet": False})
+                        with yt_dlp.YoutubeDL(debug_opts) as ydl:
+                            ydl.extract_info(url, download=False)
+                    except Exception:
+                        pass
+
                 if attempt == max_retries - 1:
                     logger.error(f"Failed to download {url} after {max_retries} attempts.")
                     return None
