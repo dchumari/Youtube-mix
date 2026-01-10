@@ -50,6 +50,7 @@ jobs:
           echo "${{ secrets.PRIMARY_TOKEN_JSON }}" > config/tokens/primary_token.json
           echo "${{ secrets.GAMING_TOKEN_JSON }}" > config/tokens/gaming_token.json
           echo "${{ secrets.CLIENT_SECRETS_JSON }}" > config/client_secrets.json
+          echo "${{ secrets.COOKIES_TXT }}" > config/cookies.txt
           echo "SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}" > .env
           echo "SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}" >> .env
           
@@ -57,6 +58,7 @@ jobs:
           echo "Checking secret files..."
           ls -l config/tokens/primary_token.json
           ls -l config/client_secrets.json
+          ls -l config/cookies.txt
           ls -l .env
 
       - name: Run Automation Workflow

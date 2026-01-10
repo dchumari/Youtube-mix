@@ -27,7 +27,11 @@ class Downloader:
             "quiet": True,
             "no_warnings": True,
         }
-        
+
+        cookie_file = Path("config/cookies.txt")
+        if cookie_file.exists():
+            ydl_opts["cookiefile"] = str(cookie_file)
+
         return self._download(url, ydl_opts, "audio")
 
     def download_video(self, url: str, subfolder: str = None) -> Optional[Path]:
@@ -43,6 +47,11 @@ class Downloader:
             "quiet": True,
             "no_warnings": True,
         }
+        
+        cookie_file = Path("config/cookies.txt")
+        if cookie_file.exists():
+            ydl_opts["cookiefile"] = str(cookie_file)
+            logger.info("Using cookies for YouTube download.")
         
         return self._download(url, ydl_opts, "video")
 
