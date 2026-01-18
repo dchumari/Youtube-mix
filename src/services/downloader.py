@@ -44,6 +44,11 @@ class Downloader:
             "verbose": True,
             "no_warnings": False,
             "logger": YtLogger(),
+            "extractor_args": {
+                "youtube": {
+                    "player_client": ["android", "ios"],
+                }
+            },
             "nocheckcertificate": True,
             "geo_bypass": True,
             "cachedir": False,
@@ -69,6 +74,11 @@ class Downloader:
             "verbose": True,
             "no_warnings": False,
             "logger": YtLogger(),
+            "extractor_args": {
+                "youtube": {
+                    "player_client": ["android", "ios"],
+                }
+            },
             "nocheckcertificate": True,
             "geo_bypass": True,
             "cachedir": False,
