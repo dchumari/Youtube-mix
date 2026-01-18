@@ -30,6 +30,8 @@ class Downloader:
         target_folder = self.download_folder / subfolder if subfolder else self.download_folder
         target_folder.mkdir(parents=True, exist_ok=True)
         
+        cookie_file = Path("config/cookies.txt")
+
         ydl_opts = {
             "outtmpl": f"{target_folder}/%(title)s.%(ext)s",
             "format": "bestaudio/best",
@@ -46,15 +48,28 @@ class Downloader:
             "logger": YtLogger(),
             "extractor_args": {
                 "youtube": {
-                    "player_client": ["android", "ios"],
+                    "player_client": ["android", "web"],
+                    "player_skip": ["hls", "dash", "webpage"],
+                    "skip": ["authcheck"],
                 }
             },
             "nocheckcertificate": True,
             "geo_bypass": True,
             "cachedir": False,
+            "extractor_retries": 5,
+            "retries": 5,
+            "retry_sleep_functions": {"extractor": lambda x: 5},
+            "sleep_interval_requests": 2,
+            "sleep_interval": 2,
+            "max_sleep_interval": 10,
+            "compat_opts": ["no-live-chat"],
+            "check_formats": "selected",
+            "extractor_sigs": True,
+            "extractor_downloads": "all",
+            "hls_prefer_native": True,
+            "external_downloader": "native",
         }
 
-        cookie_file = Path("config/cookies.txt")
         if cookie_file.exists():
             ydl_opts["cookiefile"] = str(cookie_file)
             logger.info("Using cookies for YouTube audio download.")
@@ -66,6 +81,8 @@ class Downloader:
         target_folder = self.download_folder / subfolder if subfolder else self.download_folder
         target_folder.mkdir(parents=True, exist_ok=True)
 
+        cookie_file = Path("config/cookies.txt")
+
         ydl_opts = {
             "outtmpl": f"{target_folder}/%(title)s.%(ext)s",
             "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
@@ -76,15 +93,28 @@ class Downloader:
             "logger": YtLogger(),
             "extractor_args": {
                 "youtube": {
-                    "player_client": ["android", "ios"],
+                    "player_client": ["android", "web"],
+                    "player_skip": ["hls", "dash", "webpage"],
+                    "skip": ["authcheck"],
                 }
             },
             "nocheckcertificate": True,
             "geo_bypass": True,
             "cachedir": False,
+            "extractor_retries": 5,
+            "retries": 5,
+            "retry_sleep_functions": {"extractor": lambda x: 5},
+            "sleep_interval_requests": 2,
+            "sleep_interval": 2,
+            "max_sleep_interval": 10,
+            "compat_opts": ["no-live-chat"],
+            "check_formats": "selected",
+            "extractor_sigs": True,
+            "extractor_downloads": "all",
+            "hls_prefer_native": True,
+            "external_downloader": "native",
         }
-        
-        cookie_file = Path("config/cookies.txt")
+
         if cookie_file.exists():
             ydl_opts["cookiefile"] = str(cookie_file)
             logger.info("Using cookies for YouTube video download.")
@@ -92,31 +122,57 @@ class Downloader:
         return self._download(url, ydl_opts, "video")
 
     def _download(self, url: str, opts: dict, type_label: str) -> Optional[Path]:
-        max_retries = 3
-        
+        # Use the retry count from the options or default to 3
+        max_retries = opts.get("extractor_retries", opts.get("retries", 3))
+
         for attempt in range(max_retries):
+            current_opts = opts.copy()
+
+            # Adjust extractor args based on the attempt number for signature/challenge solving
+            if attempt == 1:
+                if "extractor_args" in current_opts:
+                    if "youtube" in current_opts["extractor_args"]:
+                        current_opts["extractor_args"]["youtube"]["player_client"] = ["web"]
+            elif attempt == 2:
+                if "extractor_args" in current_opts:
+                    if "youtube" in current_opts["extractor_args"]:
+                        current_opts["extractor_args"]["youtube"]["player_client"] = ["android", "ios"]
+            elif attempt > 2:
+                if "extractor_args" in current_opts:
+                    if "youtube" in current_opts["extractor_args"]:
+                        current_opts["extractor_args"]["youtube"]["player_client"] = ["tv_embedded", "web"]
+
             try:
-                with yt_dlp.YoutubeDL(opts) as ydl:
+                with yt_dlp.YoutubeDL(current_opts) as ydl:
                     info = ydl.extract_info(url, download=True)
-                    
+
                     # Handle ytsearch results which return a list of entries
                     if 'entries' in info:
                         info = info['entries'][0]
 
                     filename = ydl.prepare_filename(info)
-                    
+
+                    # Check if the file is empty after download
+                    final_path = Path(filename)
                     if type_label == "audio":
                         # FFmpegExtractAudio postprocessor changes extension to mp3
                         final_path = Path(filename).with_suffix(".mp3")
-                    else:
-                        final_path = Path(filename)
-                        
+
+                    # Verify that the file exists and is not empty
+                    if not final_path.exists() or final_path.stat().st_size == 0:
+                        raise Exception("The downloaded file is empty")
+
                     logger.info(f"Downloaded {type_label}: {final_path.name}")
                     return final_path
-                    
+
             except Exception as e:
+                error_msg = str(e).lower()
                 logger.warning(f"Download attempt {attempt + 1}/{max_retries} failed for {url}: {e}")
-                
+
+                # Check if this is a signature/challenge solving error
+                if any(keyword in error_msg for keyword in ["signature", "challenge", "javascript", "empty"]):
+                    logger.warning(f"Possible signature/challenge solving issue detected for {url}.")
+
                 # If format error, try to list formats for debugging in logs
                 if "Requested format is not available" in str(e) and attempt == 0:
                     logger.info(f"Attempting to list available formats for troubleshooting {url}...")
@@ -131,5 +187,9 @@ class Downloader:
                 if attempt == max_retries - 1:
                     logger.error(f"Failed to download {url} after {max_retries} attempts.")
                     return None
-                time.sleep(10)  # Wait longer between retries to avoid rate limits
+
+                # Use a more progressive backoff strategy
+                sleep_time = min(10 * (attempt + 1), 30)  # Increase sleep time with each attempt, max 30 seconds
+                logger.info(f"Waiting {sleep_time} seconds before next attempt...")
+                time.sleep(sleep_time)
         return None

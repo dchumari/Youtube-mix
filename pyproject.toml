@@ -22,4 +22,5 @@ dependencies = [
     "yt-dlp[default]>=2025.11.12",
     "ytmusicapi>=1.11.2",
     "gdown>=5.2.0",
+    "yt-dlp-ejs>=0.3.1",
 ]
