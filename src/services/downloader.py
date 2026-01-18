@@ -4,6 +4,22 @@ from pathlib import Path
 from typing import Optional
 from ..utils.logger import logger
 
+class YtLogger:
+    def debug(self, msg):
+        # Filter out too much noise if needed, or keep it for debugging
+        if output_is_error(msg):
+             logger.debug(f"[yt-dlp] {msg}")
+        pass 
+
+    def warning(self, msg):
+        logger.warning(f"[yt-dlp] {msg}")
+
+    def error(self, msg):
+        logger.error(f"[yt-dlp] {msg}")
+
+def output_is_error(msg):
+    return "error" in msg.lower() or "warning" in msg.lower()
+
 class Downloader:
     def __init__(self, download_folder: str = "downloads"):
         self.download_folder = Path(download_folder)
@@ -24,8 +40,10 @@ class Downloader:
                     "preferredquality": "192",
                 }
             ],
-            "quiet": True,
-            "no_warnings": True,
+            "quiet": False,
+            "verbose": True,
+            "no_warnings": False,
+            "logger": YtLogger(),
             "nocheckcertificate": True,
             "geo_bypass": True,
             "cachedir": False,
@@ -47,8 +65,10 @@ class Downloader:
             "outtmpl": f"{target_folder}/%(title)s.%(ext)s",
             "format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
             "merge_output_format": "mp4",
-            "quiet": True,
-            "no_warnings": True,
+            "quiet": False,
+            "verbose": True,
+            "no_warnings": False,
+            "logger": YtLogger(),
             "nocheckcertificate": True,
             "geo_bypass": True,
             "cachedir": False,
