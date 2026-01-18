@@ -68,6 +68,10 @@ class Downloader:
             "extractor_downloads": "all",
             "hls_prefer_native": True,
             "external_downloader": "native",
+            "extractor_downloads": "all",
+            "http_headers": {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            }
         }
 
         if cookie_file.exists():
@@ -147,8 +151,8 @@ class Downloader:
                     # First, check if the video has downloadable formats by getting available formats
                     info = ydl.extract_info(url, download=False)
 
-                    # Check if the video has playable formats
-                    has_playable_format = False
+                    # Check if the video has downloadable formats
+                    has_downloadable_format = False
                     if 'formats' in info and info['formats']:
                         for fmt in info['formats']:
                             # Look for formats that have actual video/audio content (not just storyboards)
@@ -157,12 +161,12 @@ class Downloader:
                             format_note = fmt.get('format_note', '').lower()
 
                             if (vcodec != 'none' or acodec != 'none') and 'storyboard' not in format_note:
-                                has_playable_format = True
+                                has_downloadable_format = True
                                 break
 
-                    # If no playable formats found, skip this video
-                    if not has_playable_format:
-                        logger.warning(f"No playable formats available for {url}. Skipping...")
+                    # If no downloadable formats found, skip this video
+                    if not has_downloadable_format:
+                        logger.warning(f"No downloadable formats available for {url}. Skipping...")
                         return None
 
                     # Now download the actual content
@@ -187,7 +191,7 @@ class Downloader:
                     logger.info(f"Downloaded {type_label}: {final_path.name}")
                     return final_path
 
-            except Exception as e:
+            except yt_dlp.DownloadError as e:
                 error_msg = str(e).lower()
                 logger.warning(f"Download attempt {attempt + 1}/{max_retries} failed for {url}: {e}")
 
@@ -196,19 +200,19 @@ class Downloader:
                     logger.warning(f"Possible signature/challenge solving issue detected for {url}.")
 
                 # Check if it's a format availability error
-                if "Requested format is not available" in str(e) or "Only images are available" in str(e):
+                if "requested format is not available" in str(e).lower() or "only images are available" in str(e).lower():
                     logger.warning(f"No downloadable formats available for {url}. Skipping...")
-                    if "Only images are available" in str(e):
+                    if "only images are available" in str(e).lower():
                         return None  # Skip this video if only images are available
 
                 # If format error, try to list formats for debugging in logs
-                if "Requested format is not available" in str(e) and attempt == 0:
+                if "requested format is not available" in str(e).lower() and attempt == 0:
                     logger.info(f"Attempting to list available formats for troubleshooting {url}...")
                     try:
-                        debug_opts = opts.copy()
+                        debug_opts = current_opts.copy()
                         debug_opts.update({"listformats": True, "quiet": False})
-                        with yt_dlp.YoutubeDL(debug_opts) as ydl:
-                            ydl.extract_info(url, download=False)
+                        with yt_dlp.YoutubeDL(debug_opts) as debug_ydl:
+                            debug_ydl.extract_info(url, download=False)
                     except Exception:
                         pass
 
