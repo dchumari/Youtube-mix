@@ -8,6 +8,7 @@ from .services.downloader import Downloader
 from .services.mixer import Mixer
 from .services.uploader import YoutubeUploader
 from .services.twixtor import TwixtorProvider
+from .services.drive_provider import DriveProvider
 from .utils.logger import logger
 
 class App:
@@ -27,6 +28,7 @@ class App:
         self.downloader = Downloader(self.defaults.get("download_folder", "downloads"))
         self.mixer = Mixer()
         self.twixtor = TwixtorProvider(Path(self.defaults.get("download_folder", "downloads")) / "visuals")
+        self.drive_provider = DriveProvider(Path(self.defaults.get("download_folder", "downloads")) / "visuals_drive")
         self.uploader = YoutubeUploader(
             secrets_file=self.profile["secrets_file"],
             token_file=self.profile["token_file"]
@@ -36,7 +38,7 @@ class App:
         with open(path, 'r', encoding='utf-8') as f:
             return yaml.safe_load(f)
 
-    def run(self, dry_run: bool = False):
+    def run(self, dry_run: bool = False, video_source: str = None, video_path: str = None):
         logger.info(f"Starting workflow for channel: {self.channel_profile}")
         
         try:
@@ -92,15 +94,51 @@ class App:
                 logger.error("No audio tracks downloaded.")
                 return
 
-            # 3. Get Visuals (Twixtors)
-            logger.info("Scraping and downloading Twixtor visuals...")
-            video_paths = self.twixtor.get_clips(
-                num_series=self.defaults.get("video_category", 5), 
-                num_clips=self.defaults.get("video_clips", 5)
-            )
+            # 3. Get Visuals
+            logger.info("Getting visuals...")
+            
+            # Determine Source: CLI > Config > Default
+            source = video_source or self.profile.get("video_provider", "web")
+            # Legacy mapping: "web" -> "twixtor" if not specified otherwise
+            if source == "web" and "twixtor_url" not in self.profile:
+                source = "twixtor"
+            
+            # Determine Path/URL
+            path_or_url = video_path
+            
+            video_paths = []
+            
+            if source == "local":
+                target_path = Path(path_or_url) if path_or_url else Path(self.profile.get("local_video_path", ""))
+                logger.info(f"Using local videos from: {target_path}")
+                
+                if not target_path.exists() or not target_path.is_dir():
+                    logger.error(f"Local video path does not exist: {target_path}")
+                    return
+
+                # Glob videos
+                for ext in ["*.mp4", "*.mkv", "*.mov", "*.avi", "*.webm"]:
+                    video_paths.extend(list(target_path.glob(ext)))
+                    
+            elif source == "drive":
+                target_url = path_or_url or self.profile.get("drive_url")
+                if not target_url:
+                     logger.error("Drive URL not provided for drive source.")
+                     return
+                
+                video_paths = self.drive_provider.download_videos(target_url)
+                
+            else: # Default/Twixtor
+                # If path_or_url is provided, can TwixtorProvider use it?
+                # Currently TwixtorProvider is hardcoded to animeworldtwixtor, but we could add override.
+                # implementing basic call for now.
+                video_paths = self.twixtor.get_clips(
+                    num_series=self.defaults.get("video_category", 5), 
+                    num_clips=self.defaults.get("video_clips", 5)
+                )
             
             if not video_paths:
-                 logger.error("No Twixtor clips found/downloaded.")
+                 logger.error(f"No visuals found from source: {source}")
                  return
 
             # 4. Mix
@@ -136,7 +174,7 @@ class App:
                 title=video_title,
                 description=desc,
                 tags=self.profile.get("tags", []),
-                privacy_status="private" 
+                privacy_status="public" 
             )
             
             logger.info(f"Workflow finished successfully! Video: https://youtu.be/{video_id}")

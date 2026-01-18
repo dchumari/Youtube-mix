@@ -1,9 +1,9 @@
 defaults:
-  mix_minutes: 2
-  track_limit: 10
+  mix_minutes: 30
+  track_limit: 100
   download_folder: "downloads"
   video_category: 2  # Anime/Music
-  video_clips: 5
+  video_clips: 10
 
 channels:
   primary:
@@ -14,19 +14,25 @@ channels:
     tags: ["music", "mix", "best music"]
     playlist_id: "3mAH5gPbw4YFlYaNoGiPIX"
     youtube_channel_name: "phonkmixxx"
+    # Video Source Configuration
+    # Options: "twixtor" (default), "drive", "local"
+    video_provider: "twixtor" 
+    # local_video_path: "C:/Videos/MyCustomClips"
+    # drive_url: "https://drive.google.com/drive/folders/YOUR_FOLDER_ID"
+    
     title_templates:
-      - "MIX OF THE SUPREME BRAZILIAN PHONK 2025 🎵 Slowed + Reverb"
-      - "ULTIMATE PHONK SESSION 2025 🔥 Best Brazilian Phonk Mix"
-      - "MADNESS PHONK MIX 💀 Shot on iPhone | Brazilian Bass"
-      - "BRAZILIAN PHONK 2025 ⚡ Best Aggressive Music Mix"
-      - "PHONK MANIA 🎧 Best Brazilian Phonk 2025 High Quality"
-      - "DARKEST PHONK MIX 🌌 Brazilian Phonk 2025 | Slowed + Reverb"
-      - "BASS BOOSTED PHONK 🔥 Brazilian Mix 2025"
-      - "STREET PHONK VIBES 🏙️ Best Aggressive Brazilian Phonk"
-      - "PHONK NIGHT DRIVE 🏎️ Brazilian Phonk Mix 2025"
-      - "EVIL PHONK 🧛 Best Brazilian Phonk for Workout"
-      - "BRAZILIAN PHONK GOD 👑 Most Wanted Tracks 2025"
-      - "HEAVENLY PHONK 👼 Brazilian Phonk 2025 | High Fidelity"
+      - "ANIME ❌ MIX OF THE SUPREME BRAZILIAN PHONK 2025 🎵 Slowed + Reverb"
+      - "ANIME ❌ ULTIMATE PHONK SESSION 2025 🔥 Best Brazilian Phonk Mix"
+      - "ANIME ❌ MADNESS PHONK MIX 💀 Shot on iPhone | Brazilian Bass"
+      - "ANIME ❌ BRAZILIAN PHONK 2025 ⚡ Best Aggressive Music Mix"
+      - "ANIME ❌ PHONK MANIA 🎧 Best Brazilian Phonk 2025 High Quality"
+      - "ANIME ❌ DARKEST PHONK MIX 🌌 Brazilian Phonk 2025 | Slowed + Reverb"
+      - "ANIME ❌ BASS BOOSTED PHONK 🔥 Brazilian Mix 2025"
+      - "ANIME ❌ STREET PHONK VIBES 🏙️ Best Aggressive Brazilian Phonk"
+      - "ANIME ❌ PHONK NIGHT DRIVE 🏎️ Brazilian Phonk Mix 2025"
+      - "ANIME ❌ EVIL PHONK 🧛 Best Brazilian Phonk for Workout"
+      - "ANIME ❌ BRAZILIAN PHONK GOD 👑 Most Wanted Tracks 2025"
+      - "ANIME ❌ HEAVENLY PHONK 👼 Brazilian Phonk 2025 | High Fidelity"
     description_template: |
       MIX OF THE SUPREME BRAZILIAN PHONK 2025 | Slowed + Reverb + Brazilian Bass 🎵
 
@@ -48,6 +54,11 @@ channels:
     tags: ["gaming", "soundtrack", "ost"]
     playlist_id: "EMPTY_PLAYLIST_ID"
     youtube_channel_name: "gaming_channel"
+    
+    # Example: Using Google Drive for Gaming visual
+    video_provider: "drive"
+    drive_url: "https://drive.google.com/drive/folders/REPLACE_WITH_REAL_ID"
+    
     title_templates:
       - "Ultimate Gaming Music Mix 🎮 Top 10 Soundtrack"
       - "Epic OST Mix for Pro Gaming 🔥 2025"

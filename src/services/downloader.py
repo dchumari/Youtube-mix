@@ -29,11 +29,6 @@ class Downloader:
             "nocheckcertificate": True,
             "geo_bypass": True,
             "cachedir": False,
-            "extractor_args": {
-                "youtube": {
-                    "player_client": ["ios", "android", "web"],
-                }
-            },
         }
 
         cookie_file = Path("config/cookies.txt")
@@ -57,11 +52,6 @@ class Downloader:
             "nocheckcertificate": True,
             "geo_bypass": True,
             "cachedir": False,
-            "extractor_args": {
-                "youtube": {
-                    "player_client": ["ios", "android", "web"],
-                }
-            },
         }
         
         cookie_file = Path("config/cookies.txt")

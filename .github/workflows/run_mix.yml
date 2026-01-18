@@ -51,11 +51,32 @@ jobs:
           COOKIES_TXT: ${{ secrets.COOKIES_TXT }}
         run: |
           mkdir -p config/tokens
-          # Inject using environment variables to preserve newlines/special characters
-          echo "$PRIMARY_TOKEN_JSON" > config/tokens/primary_token.json
-          echo "$GAMING_TOKEN_JSON" > config/tokens/gaming_token.json
-          echo "$CLIENT_SECRETS_JSON" > config/client_secrets.json
-          echo "$COOKIES_TXT" > config/cookies.txt
+          echo "Checking for secrets..."
+          if [ -z "$PRIMARY_TOKEN_JSON" ]; then
+            echo "::warning::PRIMARY_TOKEN_JSON is empty or not set!"
+          else
+            echo "$PRIMARY_TOKEN_JSON" > config/tokens/primary_token.json
+          fi
+
+          if [ -z "$GAMING_TOKEN_JSON" ]; then
+            echo "::warning::GAMING_TOKEN_JSON is empty or not set!"
+            # Write an empty object to avoid JSON parse errors if the code expects a file
+            echo "{}" > config/tokens/gaming_token.json
+          else
+            echo "$GAMING_TOKEN_JSON" > config/tokens/gaming_token.json
+          fi
+
+          if [ -z "$CLIENT_SECRETS_JSON" ]; then
+            echo "::error::CLIENT_SECRETS_JSON is missing! Workflow will likely fail."
+          else
+            echo "$CLIENT_SECRETS_JSON" > config/client_secrets.json
+          fi
+
+          if [ -z "$COOKIES_TXT" ]; then
+             echo "::warning::COOKIES_TXT is empty."
+          else
+             echo "$COOKIES_TXT" > config/cookies.txt
+          fi
           
           # Inject .env for Spotify
           echo "SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}" > .env
