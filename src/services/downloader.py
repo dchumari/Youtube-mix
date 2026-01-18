@@ -144,6 +144,28 @@ class Downloader:
 
             try:
                 with yt_dlp.YoutubeDL(current_opts) as ydl:
+                    # First, check if the video has downloadable formats by getting available formats
+                    info = ydl.extract_info(url, download=False)
+
+                    # Check if the video has playable formats
+                    has_playable_format = False
+                    if 'formats' in info and info['formats']:
+                        for fmt in info['formats']:
+                            # Look for formats that have actual video/audio content (not just storyboards)
+                            vcodec = fmt.get('vcodec', 'none')
+                            acodec = fmt.get('acodec', 'none')
+                            format_note = fmt.get('format_note', '').lower()
+
+                            if (vcodec != 'none' or acodec != 'none') and 'storyboard' not in format_note:
+                                has_playable_format = True
+                                break
+
+                    # If no playable formats found, skip this video
+                    if not has_playable_format:
+                        logger.warning(f"No playable formats available for {url}. Skipping...")
+                        return None
+
+                    # Now download the actual content
                     info = ydl.extract_info(url, download=True)
 
                     # Handle ytsearch results which return a list of entries
@@ -172,6 +194,12 @@ class Downloader:
                 # Check if this is a signature/challenge solving error
                 if any(keyword in error_msg for keyword in ["signature", "challenge", "javascript", "empty"]):
                     logger.warning(f"Possible signature/challenge solving issue detected for {url}.")
+
+                # Check if it's a format availability error
+                if "Requested format is not available" in str(e) or "Only images are available" in str(e):
+                    logger.warning(f"No downloadable formats available for {url}. Skipping...")
+                    if "Only images are available" in str(e):
+                        return None  # Skip this video if only images are available
 
                 # If format error, try to list formats for debugging in logs
                 if "Requested format is not available" in str(e) and attempt == 0:
