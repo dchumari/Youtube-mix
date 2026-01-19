@@ -47,11 +47,11 @@ class Downloader:
             "no_warnings": False,
             "logger": YtLogger(),
             "extractor_args": {
-                "youtube": {
-                    "player_client": ["android", "web"],
-                    "player_skip": ["hls", "dash", "webpage"],
-                    "skip": ["authcheck"],
-                }
+                # "youtube": {
+                #     "player_client": ["android", "web"],
+                #     "player_skip": ["hls", "dash", "webpage"],
+                #     "skip": ["authcheck"],
+                # }
             },
             "nocheckcertificate": True,
             "geo_bypass": True,
@@ -96,11 +96,11 @@ class Downloader:
             "no_warnings": False,
             "logger": YtLogger(),
             "extractor_args": {
-                "youtube": {
-                    "player_client": ["android", "web"],
-                    "player_skip": ["hls", "dash", "webpage"],
-                    "skip": ["authcheck"],
-                }
+                # "youtube": {
+                #     "player_client": ["android", "web"],
+                #     "player_skip": ["hls", "dash", "webpage"],
+                #     "skip": ["authcheck"],
+                # }
             },
             "nocheckcertificate": True,
             "geo_bypass": True,
@@ -133,18 +133,19 @@ class Downloader:
             current_opts = opts.copy()
 
             # Adjust extractor args based on the attempt number for signature/challenge solving
-            if attempt == 1:
-                if "extractor_args" in current_opts:
-                    if "youtube" in current_opts["extractor_args"]:
-                        current_opts["extractor_args"]["youtube"]["player_client"] = ["web"]
-            elif attempt == 2:
-                if "extractor_args" in current_opts:
-                    if "youtube" in current_opts["extractor_args"]:
-                        current_opts["extractor_args"]["youtube"]["player_client"] = ["android", "ios"]
-            elif attempt > 2:
-                if "extractor_args" in current_opts:
-                    if "youtube" in current_opts["extractor_args"]:
-                        current_opts["extractor_args"]["youtube"]["player_client"] = ["tv_embedded", "web"]
+            # Adjust extractor args based on the attempt number for signature/challenge solving
+            # if attempt == 1:
+            #     if "extractor_args" in current_opts:
+            #         if "youtube" in current_opts["extractor_args"]:
+            #             current_opts["extractor_args"]["youtube"]["player_client"] = ["web"]
+            # elif attempt == 2:
+            #     if "extractor_args" in current_opts:
+            #         if "youtube" in current_opts["extractor_args"]:
+            #             current_opts["extractor_args"]["youtube"]["player_client"] = ["android", "ios"]
+            # elif attempt > 2:
+            #     if "extractor_args" in current_opts:
+            #         if "youtube" in current_opts["extractor_args"]:
+            #             current_opts["extractor_args"]["youtube"]["player_client"] = ["tv_embedded", "web"]
 
             try:
                 with yt_dlp.YoutubeDL(current_opts) as ydl:
