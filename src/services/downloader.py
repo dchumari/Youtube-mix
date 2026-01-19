@@ -47,11 +47,10 @@ class Downloader:
             "no_warnings": False,
             "logger": YtLogger(),
             "extractor_args": {
-                # "youtube": {
-                #     "player_client": ["android", "web"],
-                #     "player_skip": ["hls", "dash", "webpage"],
-                #     "skip": ["authcheck"],
-                # }
+                "youtube": {
+                    "player_client": ["android", "ios"],  # Use mobile clients to avoid signature issues
+                    "skip": ["dash", "hls"],  # Skip problematic formats
+                }
             },
             "nocheckcertificate": True,
             "geo_bypass": True,
@@ -64,11 +63,7 @@ class Downloader:
             "max_sleep_interval": 10,
             "compat_opts": ["no-live-chat"],
             "check_formats": "selected",
-            "extractor_sigs": True,
-            "extractor_downloads": "all",
-            "hls_prefer_native": True,
-            "external_downloader": "native",
-            "extractor_downloads": "all",
+            "hls_prefer_native": False,  # Use external downloader for HLS
             "http_headers": {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
             }
@@ -96,11 +91,10 @@ class Downloader:
             "no_warnings": False,
             "logger": YtLogger(),
             "extractor_args": {
-                # "youtube": {
-                #     "player_client": ["android", "web"],
-                #     "player_skip": ["hls", "dash", "webpage"],
-                #     "skip": ["authcheck"],
-                # }
+                "youtube": {
+                    "player_client": ["android", "ios"],  # Use mobile clients to avoid signature issues
+                    "skip": ["dash", "hls"],  # Skip problematic formats
+                }
             },
             "nocheckcertificate": True,
             "geo_bypass": True,
@@ -113,10 +107,7 @@ class Downloader:
             "max_sleep_interval": 10,
             "compat_opts": ["no-live-chat"],
             "check_formats": "selected",
-            "extractor_sigs": True,
-            "extractor_downloads": "all",
-            "hls_prefer_native": True,
-            "external_downloader": "native",
+            "hls_prefer_native": False,  # Use external downloader for HLS
         }
 
         if cookie_file.exists():
