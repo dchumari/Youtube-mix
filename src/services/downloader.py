@@ -48,7 +48,7 @@ class Downloader:
             "logger": YtLogger(),
             "extractor_args": {
                 "youtube": {
-                    "player_client": ["android", "ios"],  # Use mobile clients to avoid signature issues
+                    "player_client": ["mweb", "web"],  # Use mobile web client with PO token
                     "skip": ["dash", "hls"],  # Skip problematic formats
                 }
             },
@@ -92,7 +92,7 @@ class Downloader:
             "logger": YtLogger(),
             "extractor_args": {
                 "youtube": {
-                    "player_client": ["android", "ios"],  # Use mobile clients to avoid signature issues
+                    "player_client": ["mweb", "web"],  # Use mobile web client with PO token
                     "skip": ["dash", "hls"],  # Skip problematic formats
                 }
             },
@@ -119,24 +119,12 @@ class Downloader:
     def _download(self, url: str, opts: dict, type_label: str) -> Optional[Path]:
         # Use the retry count from the options or default to 3
         max_retries = opts.get("extractor_retries", opts.get("retries", 3))
+        
+        # Track if we have already tried disabling cookies to avoid infinite toggling (though logic below is one-way)
+        cookies_disabled = False
 
         for attempt in range(max_retries):
             current_opts = opts.copy()
-
-            # Adjust extractor args based on the attempt number for signature/challenge solving
-            # Adjust extractor args based on the attempt number for signature/challenge solving
-            # if attempt == 1:
-            #     if "extractor_args" in current_opts:
-            #         if "youtube" in current_opts["extractor_args"]:
-            #             current_opts["extractor_args"]["youtube"]["player_client"] = ["web"]
-            # elif attempt == 2:
-            #     if "extractor_args" in current_opts:
-            #         if "youtube" in current_opts["extractor_args"]:
-            #             current_opts["extractor_args"]["youtube"]["player_client"] = ["android", "ios"]
-            # elif attempt > 2:
-            #     if "extractor_args" in current_opts:
-            #         if "youtube" in current_opts["extractor_args"]:
-            #             current_opts["extractor_args"]["youtube"]["player_client"] = ["tv_embedded", "web"]
 
             try:
                 with yt_dlp.YoutubeDL(current_opts) as ydl:
@@ -186,6 +174,22 @@ class Downloader:
             except yt_dlp.DownloadError as e:
                 error_msg = str(e).lower()
                 logger.warning(f"Download attempt {attempt + 1}/{max_retries} failed for {url}: {e}")
+
+                # Smart recovery for cookie/bot issues
+                if "cookie" in current_opts and not cookies_disabled:
+                    # Check for indicators that cookies are the problem
+                    cookie_issues = [
+                        "sign in to confirm",
+                        "cookies are no longer valid",
+                        "cookie file",
+                        "403 forbidden" # Sometimes caused by bad cookies
+                    ]
+                    if any(issue in error_msg for issue in cookie_issues):
+                        logger.warning("Detected potential cookie/auth issue. Retrying WITHOUT cookies...")
+                        del opts["cookiefile"] # Remove from the main opts dictionary for future iterations
+                        cookies_disabled = True
+                        time.sleep(2) # Short pause before retry
+                        continue # Retry immediately with new opts
 
                 # Check if this is a signature/challenge solving error
                 if any(keyword in error_msg for keyword in ["signature", "challenge", "javascript", "empty"]):

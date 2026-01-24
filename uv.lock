@@ -107,6 +107,15 @@ wheels = [
 ]
 
 [[package]]
+name = "bgutil-ytdlp-pot-provider"
+version = "1.2.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/eb/2b/6ee7ce5eb7ec148ad43603f9ed6875c65f93668e62e41f3faae2abeeadca/bgutil_ytdlp_pot_provider-1.2.2.tar.gz", hash = "sha256:f597d7f453a3ceee24251405a5d769e1e3f31f39d5760670f273630fddae417e", size = 9372, upload-time = "2025-08-16T09:02:08.431Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/de/68/665246c0469147cc431fcd6450ef03873de644c8d1510c25b1dfa80ce8ec/bgutil_ytdlp_pot_provider-1.2.2-py3-none-any.whl", hash = "sha256:f2ff0f340e36503f24119192c7dfa1c1957f37520e78764a3cdf3d99db46633a", size = 9983, upload-time = "2025-08-16T09:02:07.383Z" },
+]
+
+[[package]]
 name = "cachetools"
 version = "6.2.2"
 source = { registry = "https://pypi.org/simple" }
@@ -988,6 +997,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "beautifulsoup4" },
+    { name = "bgutil-ytdlp-pot-provider" },
     { name = "ffmpeg-python" },
     { name = "gdown" },
     { name = "google-api-python-client" },
@@ -1011,6 +1021,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.14.3" },
+    { name = "bgutil-ytdlp-pot-provider", specifier = ">=0.2.2" },
     { name = "ffmpeg-python", specifier = ">=0.2.0" },
     { name = "gdown", specifier = ">=5.2.0" },
     { name = "google-api-python-client", specifier = ">=2.187.0" },

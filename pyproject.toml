@@ -24,4 +24,5 @@ dependencies = [
     "gdown>=5.2.0",
     "yt-dlp-ejs>=0.3.2",
     "nodejs-wheel-binaries>=24.11.1",
+    "bgutil-ytdlp-pot-provider>=0.2.2",
 ]
