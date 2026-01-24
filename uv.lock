@@ -107,15 +107,6 @@ wheels = [
 ]
 
 [[package]]
-name = "bgutil-ytdlp-pot-provider"
-version = "1.2.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/eb/2b/6ee7ce5eb7ec148ad43603f9ed6875c65f93668e62e41f3faae2abeeadca/bgutil_ytdlp_pot_provider-1.2.2.tar.gz", hash = "sha256:f597d7f453a3ceee24251405a5d769e1e3f31f39d5760670f273630fddae417e", size = 9372, upload-time = "2025-08-16T09:02:08.431Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/de/68/665246c0469147cc431fcd6450ef03873de644c8d1510c25b1dfa80ce8ec/bgutil_ytdlp_pot_provider-1.2.2-py3-none-any.whl", hash = "sha256:f2ff0f340e36503f24119192c7dfa1c1957f37520e78764a3cdf3d99db46633a", size = 9983, upload-time = "2025-08-16T09:02:07.383Z" },
-]
-
-[[package]]
 name = "cachetools"
 version = "6.2.2"
 source = { registry = "https://pypi.org/simple" }
@@ -997,7 +988,6 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "beautifulsoup4" },
-    { name = "bgutil-ytdlp-pot-provider" },
     { name = "ffmpeg-python" },
     { name = "gdown" },
     { name = "google-api-python-client" },
@@ -1014,14 +1004,12 @@ dependencies = [
     { name = "tqdm" },
     { name = "typer" },
     { name = "yt-dlp" },
-    { name = "yt-dlp-ejs" },
     { name = "ytmusicapi" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.14.3" },
-    { name = "bgutil-ytdlp-pot-provider", specifier = ">=0.2.2" },
     { name = "ffmpeg-python", specifier = ">=0.2.0" },
     { name = "gdown", specifier = ">=5.2.0" },
     { name = "google-api-python-client", specifier = ">=2.187.0" },
@@ -1038,7 +1026,6 @@ requires-dist = [
     { name = "tqdm", specifier = ">=4.67.1" },
     { name = "typer", specifier = ">=0.21.1" },
     { name = "yt-dlp", specifier = ">=2026.1.1" },
-    { name = "yt-dlp-ejs", specifier = ">=0.3.2" },
     { name = "ytmusicapi", specifier = ">=1.11.2" },
 ]
 
@@ -1049,15 +1036,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/47/f5/b9bee6c8a960541acdcbd1c21a16b2a732d737579bc32005a9a31a2b537b/yt_dlp-2026.1.19.359.dev0.tar.gz", hash = "sha256:6d55a5a6c13579d4a29b853726b95eaba3875df594d5916e8668da92a6326d91", size = 3090696, upload-time = "2026-01-19T00:09:03.835Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/68/92/4751e745abf6625e4938ea1bb10df3bf2ba81cf739b3fecffc483c0d02d4/yt_dlp-2026.1.19.359.dev0-py3-none-any.whl", hash = "sha256:1e5042c2cd672745bc8f16435fff629b15b391b841d814eeae669ea032d99687", size = 3290551, upload-time = "2026-01-19T00:09:01.433Z" },
-]
-
-[[package]]
-name = "yt-dlp-ejs"
-version = "0.3.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/de/72/57d02cf78eb45126bd171298d6a58a5bd48ce1a398b6b7ff00fc904f1f0c/yt_dlp_ejs-0.3.2.tar.gz", hash = "sha256:31a41292799992bdc913e03c9fac2a8c90c82a5cbbc792b2e3373b01da841e3e", size = 34678, upload-time = "2025-12-07T23:44:48.258Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/9d/0d/1f0d7a735ca60b87953271b15d00eff5eef05f6118390ddf6f81982526ed/yt_dlp_ejs-0.3.2-py3-none-any.whl", hash = "sha256:f2dc6b3d1b909af1f13e021621b0af048056fca5fb07c4db6aa9bbb37a4f66a9", size = 53252, upload-time = "2025-12-07T23:44:46.605Z" },
 ]
 
 [[package]]

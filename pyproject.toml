@@ -22,7 +22,5 @@ dependencies = [
     "yt-dlp>=2026.01.01",
     "ytmusicapi>=1.11.2",
     "gdown>=5.2.0",
-    "yt-dlp-ejs>=0.3.2",
     "nodejs-wheel-binaries>=24.11.1",
-    "bgutil-ytdlp-pot-provider>=0.2.2",
 ]

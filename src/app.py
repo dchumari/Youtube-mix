@@ -195,9 +195,10 @@ class App:
                 # User said "removes all downloaded files". 
                 # Usually that means the source files.
                 # If it failed, we definitely want everything gone.
-                shutil.rmtree(download_folder)
+                # Use ignore_errors=True to handle cases where files might be temporarily locked
+                shutil.rmtree(download_folder, ignore_errors=True)
                 download_folder.mkdir(parents=True, exist_ok=True)
-                logger.info("Cleanup successful.")
+                logger.info("Cleanup successful (attempted).")
             except Exception as e:
                 logger.warning(f"Cleanup failed: {e}")
 

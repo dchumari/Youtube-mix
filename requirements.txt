@@ -10,4 +10,3 @@ requests
 beautifulsoup4
 gdown
 ytmusicapi
-yt-dlp-ejs

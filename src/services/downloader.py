@@ -30,7 +30,7 @@ class Downloader:
         target_folder = self.download_folder / subfolder if subfolder else self.download_folder
         target_folder.mkdir(parents=True, exist_ok=True)
         
-        cookie_file = Path("config/cookies.txt")
+        
 
         ydl_opts = {
             "outtmpl": f"{target_folder}/%(title)s.%(ext)s",
@@ -48,7 +48,7 @@ class Downloader:
             "logger": YtLogger(),
             "extractor_args": {
                 "youtube": {
-                    "player_client": ["mweb", "web"],  # Use mobile web client with PO token
+                    "player_client": ["ios", "web", "mweb"],  # Use ios client first
                     "skip": ["dash", "hls"],  # Skip problematic formats
                 }
             },
@@ -69,10 +69,6 @@ class Downloader:
             }
         }
 
-        if cookie_file.exists():
-            ydl_opts["cookiefile"] = str(cookie_file)
-            logger.info("Using cookies for YouTube audio download.")
-
         return self._download(url, ydl_opts, "audio")
 
     def download_video(self, url: str, subfolder: str = None) -> Optional[Path]:
@@ -80,7 +76,7 @@ class Downloader:
         target_folder = self.download_folder / subfolder if subfolder else self.download_folder
         target_folder.mkdir(parents=True, exist_ok=True)
 
-        cookie_file = Path("config/cookies.txt")
+        
 
         ydl_opts = {
             "outtmpl": f"{target_folder}/%(title)s.%(ext)s",
@@ -92,7 +88,7 @@ class Downloader:
             "logger": YtLogger(),
             "extractor_args": {
                 "youtube": {
-                    "player_client": ["mweb", "web"],  # Use mobile web client with PO token
+                    "player_client": ["ios", "web", "mweb"],  # Use ios client first
                     "skip": ["dash", "hls"],  # Skip problematic formats
                 }
             },
@@ -110,114 +106,89 @@ class Downloader:
             "hls_prefer_native": False,  # Use external downloader for HLS
         }
 
-        if cookie_file.exists():
-            ydl_opts["cookiefile"] = str(cookie_file)
-            logger.info("Using cookies for YouTube video download.")
-        
         return self._download(url, ydl_opts, "video")
 
     def _download(self, url: str, opts: dict, type_label: str) -> Optional[Path]:
-        # Use the retry count from the options or default to 3
+        # Use the retry count from the options or default
         max_retries = opts.get("extractor_retries", opts.get("retries", 3))
         
-        # Track if we have already tried disabling cookies to avoid infinite toggling (though logic below is one-way)
-        cookies_disabled = False
+        # Track state across retries
+        
+        # Clients to cycle through.
+        # 'ios': Often less bot detection, good fallback.
+        # 'tv': Good for bypassing some restricts.
+        # 'web': Basic fallback.
+        # 'android': Standard mobile.
+        clients = ["ios", "tv", "web", "android"]
+        client_index = 0
 
         for attempt in range(max_retries):
             current_opts = opts.copy()
+            
+            # Select client for this attempt
+            current_client = clients[client_index % len(clients)]
+            
+            # Rotate client on next attempt
+            client_index += 1
+            
+            # Update extractor args with the chosen client
+            if "extractor_args" not in current_opts:
+                current_opts["extractor_args"] = {}
+            if "youtube" not in current_opts["extractor_args"]:
+                current_opts["extractor_args"]["youtube"] = {}
+            
+            # Force the client using arguments
+            # Note: mweb/web usually good for public, android/ios for signed.
+            current_opts["extractor_args"]["youtube"]["player_client"] = [current_client]
+            
+            logger.info(f"Attempt {attempt + 1}/{max_retries} using client '{current_client}'...")
 
             try:
                 with yt_dlp.YoutubeDL(current_opts) as ydl:
-                    # First, check if the video has downloadable formats by getting available formats
+                    # First, check if the video has downloadable formats
                     info = ydl.extract_info(url, download=False)
 
-                    # Check if the video has downloadable formats
+                    # Check for available formats (ignoring storyboards)
                     has_downloadable_format = False
                     if 'formats' in info and info['formats']:
                         for fmt in info['formats']:
-                            # Look for formats that have actual video/audio content (not just storyboards)
                             vcodec = fmt.get('vcodec', 'none')
                             acodec = fmt.get('acodec', 'none')
                             format_note = fmt.get('format_note', '').lower()
-
                             if (vcodec != 'none' or acodec != 'none') and 'storyboard' not in format_note:
                                 has_downloadable_format = True
                                 break
 
-                    # If no downloadable formats found, skip this video
                     if not has_downloadable_format:
-                        logger.warning(f"No downloadable formats available for {url}. Skipping...")
-                        return None
+                        # If no formats and we are using mweb/android, it might be a bot block.
+                        # Raising DownloadError triggers the catch block where we retry/rotate.
+                        raise yt_dlp.DownloadError(f"No downloadable formats found with client {current_client}")
 
-                    # Now download the actual content
+                    # Download
                     info = ydl.extract_info(url, download=True)
-
-                    # Handle ytsearch results which return a list of entries
                     if 'entries' in info:
                         info = info['entries'][0]
 
                     filename = ydl.prepare_filename(info)
-
-                    # Check if the file is empty after download
                     final_path = Path(filename)
                     if type_label == "audio":
-                        # FFmpegExtractAudio postprocessor changes extension to mp3
                         final_path = Path(filename).with_suffix(".mp3")
 
-                    # Verify that the file exists and is not empty
                     if not final_path.exists() or final_path.stat().st_size == 0:
                         raise Exception("The downloaded file is empty")
 
                     logger.info(f"Downloaded {type_label}: {final_path.name}")
                     return final_path
 
-            except yt_dlp.DownloadError as e:
+            except (yt_dlp.DownloadError, Exception) as e:
                 error_msg = str(e).lower()
-                logger.warning(f"Download attempt {attempt + 1}/{max_retries} failed for {url}: {e}")
-
-                # Smart recovery for cookie/bot issues
-                if "cookie" in current_opts and not cookies_disabled:
-                    # Check for indicators that cookies are the problem
-                    cookie_issues = [
-                        "sign in to confirm",
-                        "cookies are no longer valid",
-                        "cookie file",
-                        "403 forbidden" # Sometimes caused by bad cookies
-                    ]
-                    if any(issue in error_msg for issue in cookie_issues):
-                        logger.warning("Detected potential cookie/auth issue. Retrying WITHOUT cookies...")
-                        del opts["cookiefile"] # Remove from the main opts dictionary for future iterations
-                        cookies_disabled = True
-                        time.sleep(2) # Short pause before retry
-                        continue # Retry immediately with new opts
-
-                # Check if this is a signature/challenge solving error
-                if any(keyword in error_msg for keyword in ["signature", "challenge", "javascript", "empty"]):
-                    logger.warning(f"Possible signature/challenge solving issue detected for {url}.")
-
-                # Check if it's a format availability error
-                if "requested format is not available" in str(e).lower() or "only images are available" in str(e).lower():
-                    logger.warning(f"No downloadable formats available for {url}. Skipping...")
-                    if "only images are available" in str(e).lower():
-                        return None  # Skip this video if only images are available
-
-                # If format error, try to list formats for debugging in logs
-                if "requested format is not available" in str(e).lower() and attempt == 0:
-                    logger.info(f"Attempting to list available formats for troubleshooting {url}...")
-                    try:
-                        debug_opts = current_opts.copy()
-                        debug_opts.update({"listformats": True, "quiet": False})
-                        with yt_dlp.YoutubeDL(debug_opts) as debug_ydl:
-                            debug_ydl.extract_info(url, download=False)
-                    except Exception:
-                        pass
+                logger.warning(f"Download attempt {attempt + 1} failed with client {current_client}: {e}")
 
                 if attempt == max_retries - 1:
                     logger.error(f"Failed to download {url} after {max_retries} attempts.")
                     return None
 
-                # Use a more progressive backoff strategy
-                sleep_time = min(10 * (attempt + 1), 30)  # Increase sleep time with each attempt, max 30 seconds
-                logger.info(f"Waiting {sleep_time} seconds before next attempt...")
+                sleep_time = 5
+                logger.info(f"Waiting {sleep_time} seconds before retry...")
                 time.sleep(sleep_time)
         return None

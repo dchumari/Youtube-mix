@@ -1,5 +1,5 @@
 defaults:
-  mix_minutes: 30
+  mix_minutes: 5
   track_limit: 100
   download_folder: "downloads"
   video_category: 2  # Anime/Music
@@ -72,3 +72,19 @@ channels:
       {time_stamps}
 
       #gaming #soundtrack #ost
+
+
+
+  "2016":
+    secrets_file: "config/client_secrets.json"
+    token_file: "config/tokens/2016_token.json"
+    tags: ["2016 mix", "2016 music", "throwback playlist"]
+    playlist_id: "32LbIgPt2PtDr3CXhQVZdL"
+    youtube_channel_name: "2016mix"
+    video_provider: "twixtor"
+    title_templates:
+      - "New Mix 2025 - 2016 🎵"
+    description_template: |
+      New Mix from 2016!
+
+      {time_stamps}
