@@ -1,63 +1,97 @@
 defaults:
-  mix_minutes: 2
+  mix_minutes: 3
   track_limit: 10
-  download_folder: "downloads"
-  video_category: 2  # Anime/Music
+  download_folder: downloads
+  video_category: 2
   video_clips: 5
-
 channels:
   primary:
-    # Relative to project root
-    secrets_file: "config/client_secrets.json"
-    # Token file will be generated here
-    token_file: "config/tokens/primary_token.json"
-    tags: ["music", "mix", "best music"]
-    playlist_id: "3mAH5gPbw4YFlYaNoGiPIX"
-    youtube_channel_name: "phonkmixxx"
+    secrets_file: config/client_secrets.json
+    token_file: config/tokens/primary_token.json
+    tags:
+    - music
+    - mix
+    - best music
+    playlist_id: 3mAH5gPbw4YFlYaNoGiPIX
+    youtube_channel_name: phonkmixxx
     title_templates:
-      - "MIX OF THE SUPREME BRAZILIAN PHONK 2025 🎵 Slowed + Reverb"
-      - "ULTIMATE PHONK SESSION 2025 🔥 Best Brazilian Phonk Mix"
-      - "MADNESS PHONK MIX 💀 Shot on iPhone | Brazilian Bass"
-      - "BRAZILIAN PHONK 2025 ⚡ Best Aggressive Music Mix"
-      - "PHONK MANIA 🎧 Best Brazilian Phonk 2025 High Quality"
-      - "DARKEST PHONK MIX 🌌 Brazilian Phonk 2025 | Slowed + Reverb"
-      - "BASS BOOSTED PHONK 🔥 Brazilian Mix 2025"
-      - "STREET PHONK VIBES 🏙️ Best Aggressive Brazilian Phonk"
-      - "PHONK NIGHT DRIVE 🏎️ Brazilian Phonk Mix 2025"
-      - "EVIL PHONK 🧛 Best Brazilian Phonk for Workout"
-      - "BRAZILIAN PHONK GOD 👑 Most Wanted Tracks 2025"
-      - "HEAVENLY PHONK 👼 Brazilian Phonk 2025 | High Fidelity"
-    description_template: |
-      MIX OF THE SUPREME BRAZILIAN PHONK 2025 | Slowed + Reverb + Brazilian Bass 🎵
+    - MIX OF THE SUPREME BRAZILIAN PHONK 2025 🎵 Slowed + Reverb
+    - ULTIMATE PHONK SESSION 2025 🔥 Best Brazilian Phonk Mix
+    - MADNESS PHONK MIX 💀 Shot on iPhone | Brazilian Bass
+    - BRAZILIAN PHONK 2025 ⚡ Best Aggressive Music Mix
+    - PHONK MANIA 🎧 Best Brazilian Phonk 2025 High Quality
+    - DARKEST PHONK MIX 🌌 Brazilian Phonk 2025 | Slowed + Reverb
+    - BASS BOOSTED PHONK 🔥 Brazilian Mix 2025
+    - STREET PHONK VIBES 🏙️ Best Aggressive Brazilian Phonk
+    - PHONK NIGHT DRIVE 🏎️ Brazilian Phonk Mix 2025
+    - EVIL PHONK 🧛 Best Brazilian Phonk for Workout
+    - BRAZILIAN PHONK GOD 👑 Most Wanted Tracks 2025
+    - HEAVENLY PHONK 👼 Brazilian Phonk 2025 | High Fidelity
+    description_template: 'MIX OF THE SUPREME BRAZILIAN PHONK 2025 | Slowed + Reverb
+      + Brazilian Bass 🎵
+
 
       🎧 YOUR ULTIMATE PHONK SESSION STARTS HERE 🎧
 
-      Prepare for a non-stop wave of the hardest, most hypnotic Brazilian Phonk anthems of 2025. This mix is engineered for maximum impact.
+
+      Prepare for a non-stop wave of the hardest, most hypnotic Brazilian Phonk anthems
+      of 2025. This mix is engineered for maximum impact.
+
 
       👀 TRACKLIST:
+
       {time_stamps}
 
+
       📜 COPYRIGHT DISCLAIMER:
-      All tracks and visuals belong to their respective owners. No copyright infringement intended.
+
+      All tracks and visuals belong to their respective owners. No copyright infringement
+      intended.
+
 
       #phonk #phonkmix #brazilianphonk #montagem
 
+      '
   gaming:
-    secrets_file: "config/client_secrets.json"
-    token_file: "config/tokens/gaming_token.json"
-    tags: ["gaming", "soundtrack", "ost"]
-    playlist_id: "EMPTY_PLAYLIST_ID"
-    youtube_channel_name: "gaming_channel"
+    secrets_file: config/client_secrets.json
+    token_file: config/tokens/gaming_token.json
+    tags:
+    - gaming
+    - soundtrack
+    - ost
+    playlist_id: EMPTY_PLAYLIST_ID
+    youtube_channel_name: gaming_channel
     title_templates:
-      - "Ultimate Gaming Music Mix 🎮 Top 10 Soundtrack"
-      - "Epic OST Mix for Pro Gaming 🔥 2025"
-      - "Gaming Sessions Vol. 1 🎧 Best Music"
-    description_template: |
-      Epic Gaming Music Mix! 🎮
+    - Ultimate Gaming Music Mix 🎮 Top 10 Soundtrack
+    - Epic OST Mix for Pro Gaming 🔥 2025
+    - Gaming Sessions Vol. 1 🎧 Best Music
+    description_template: 'Epic Gaming Music Mix! 🎮
+
 
       The best tracks for your gaming session.
 
+
       👀 TRACKLIST:
+
       {time_stamps}
 
+
       #gaming #soundtrack #ost
+
+      '
+  Twenty16:
+    secrets_file: config/client_secrets.json
+    token_file: config/tokens/Twenty16_token.json
+    youtube_channel_name: Twenty16
+    playlist_id: 32LbIgPt2PtDr3CXhQVZdL
+    tags:
+    - '2016'
+    - mixtape
+    - nostalgia
+    - nostalgic music
+    title_templates:
+    - 'POV: Worst Day of 2016'
+    description_template: 'Enjoy this mix!
+
+
+      {time_stamps}'
