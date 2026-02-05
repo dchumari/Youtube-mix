@@ -4,7 +4,49 @@ on:
   schedule:
     # Runs at 23:50 UTC every day
     - cron: '50 23 * * *'
-  workflow_dispatch: # Allows manual triggering for testing
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: 'Channel profile to use'
+        required: true
+        default: 'primary'
+        type: choice
+        options:
+          - primary
+          - gaming
+          - Twenty16
+          - SoccerEdits
+      mix_minutes:
+        description: 'Mix duration (minutes)'
+        required: false
+        type: string
+      track_limit:
+        description: 'Maximum tracks to fetch'
+        required: false
+        type: string
+      video_category:
+        description: 'Video category (Twixtor)'
+        required: false
+        type: string
+      video_clips:
+        description: 'Clips count'
+        required: false
+        type: string
+      posting:
+        description: 'Privacy status'
+        required: false
+        default: 'default'
+        type: choice
+        options:
+          - default
+          - public
+          - private
+          - unlisted
+      dry_run:
+        description: 'Skip upload step'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   build-and-run:
@@ -26,6 +68,14 @@ jobs:
       - name: Install uv
         run: curl -LsSf https://astral.sh/uv/install.sh | sh
 
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('**/uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+
       - name: Install dependencies
         run: uv sync
 
@@ -33,10 +83,27 @@ jobs:
         run: |
           mkdir -p config/tokens
           echo "${{ secrets.CLIENT_SECRETS_JSON }}" > config/client_secrets.json
-          echo "${{ secrets.PRIMARY_TOKEN_JSON }}" > config/tokens/primary_token.json
           echo "${{ secrets.DOT_ENV }}" > .env
+          
+          # Inject tokens for all possible channels if secrets exist
+          if [ -n "${{ secrets.PRIMARY_TOKEN_JSON }}" ]; then echo "${{ secrets.PRIMARY_TOKEN_JSON }}" > config/tokens/primary_token.json; fi
+          if [ -n "${{ secrets.GAMING_TOKEN_JSON }}" ]; then echo "${{ secrets.GAMING_TOKEN_JSON }}" > config/tokens/gaming_token.json; fi
+          if [ -n "${{ secrets.TWENTY16_TOKEN_JSON }}" ]; then echo "${{ secrets.TWENTY16_TOKEN_JSON }}" > config/tokens/Twenty16_token.json; fi
+          if [ -n "${{ secrets.SOCCEREDITS_TOKEN_JSON }}" ]; then echo "${{ secrets.SOCCEREDITS_TOKEN_JSON }}" > config/tokens/SoccerEdits_token.json; fi
 
       - name: Run Animation Workflow
-        run: uv run main.py run --channel primary
+        run: |
+          # Build command dynamically based on inputs
+          CMD="uv run main.py run --channel ${{ github.event.inputs.channel || 'primary' }}"
+          
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then CMD="$CMD --dry"; fi
+          if [ -n "${{ github.event.inputs.mix_minutes }}" ]; then CMD="$CMD --mix-minutes ${{ github.event.inputs.mix_minutes }}"; fi
+          if [ -n "${{ github.event.inputs.track_limit }}" ]; then CMD="$CMD --track-limit ${{ github.event.inputs.track_limit }}"; fi
+          if [ -n "${{ github.event.inputs.video_category }}" ]; then CMD="$CMD --video-category ${{ github.event.inputs.video_category }}"; fi
+          if [ -n "${{ github.event.inputs.video_clips }}" ]; then CMD="$CMD --video-clips ${{ github.event.inputs.video_clips }}"; fi
+          if [ "${{ github.event.inputs.posting }}" != "default" ] && [ -n "${{ github.event.inputs.posting }}" ]; then CMD="$CMD --posting ${{ github.event.inputs.posting }}"; fi
+          
+          echo "Executing: $CMD"
+          eval $CMD
         env:
           PYTHONUNBUFFERED: 1
