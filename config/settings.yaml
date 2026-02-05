@@ -4,6 +4,7 @@ defaults:
   download_folder: downloads
   video_category: 2
   video_clips: 5
+  posting: private
 channels:
   primary:
     secrets_file: config/client_secrets.json
@@ -14,6 +15,12 @@ channels:
     - best music
     playlist_id: 3mAH5gPbw4YFlYaNoGiPIX
     youtube_channel_name: phonkmixxx
+    posting: private
+    mix_minutes: 3
+    track_limit: 10
+    video_category: 2
+    video_clips: 5
+    video_folders: https://drive.google.com/drive/folders/1EOe75E5Myn0DzPFSL0hUHoRcTQbv3lsj
     title_templates:
     - MIX OF THE SUPREME BRAZILIAN PHONK 2025 🎵 Slowed + Reverb
     - ULTIMATE PHONK SESSION 2025 🔥 Best Brazilian Phonk Mix
@@ -61,6 +68,11 @@ channels:
     - ost
     playlist_id: EMPTY_PLAYLIST_ID
     youtube_channel_name: gaming_channel
+    posting: private
+    mix_minutes: 3
+    track_limit: 10
+    video_category: 2
+    video_clips: 5
     title_templates:
     - Ultimate Gaming Music Mix 🎮 Top 10 Soundtrack
     - Epic OST Mix for Pro Gaming 🔥 2025
@@ -83,6 +95,14 @@ channels:
     secrets_file: config/client_secrets.json
     token_file: config/tokens/Twenty16_token.json
     youtube_channel_name: Twenty16
+    posting: private
+    mix_minutes: 3
+    track_limit: 10
+    video_category: 2
+    video_clips: 5
+    video_folders: 
+    - https://drive.google.com/drive/folders/1UNvnR1MGdYXQSHPCjPeenLFgppq8e1pR?usp=drive_link
+    thumbnail_folders: https://drive.google.com/drive/folders/1P4nHU9_ua9r1KArJQ_ywWFLlnrjJg9Nw?usp=drive_link
     playlist_id: 32LbIgPt2PtDr3CXhQVZdL
     tags:
     - '2016'
@@ -90,7 +110,55 @@ channels:
     - nostalgia
     - nostalgic music
     title_templates:
-    - 'POV: Worst Day of 2016'
+    - POV: It’s 2016 Again
+    - wake up… it’s 2016
+    - you accidentally time-traveled to 2016
+    - it feels like 2016 again
+    - this playlist thinks it’s 2016
+    - you open your old laptop in 2016
+    - somewhere between 2016 and now
+    - you never really left 2016
+    - late night thoughts in 2016
+    - 2016 nostalgia hits different
+    - it’s 2am and suddenly it’s 2016
+    - a playlist for when life felt simpler
+    - you press play and it’s 2016
+    - soft memories from 2016
+    - this feels like a 2016 summer
+    - 2016 but only the good parts
+    - headphones on, back in 2016
+    - you miss 2016 more than you admit
+    - a quiet trip back to 2016
+    - 2016 vibes you forgot about
+    description_template: "✨ Close your eyes and let the nostalgia take over. ✨ \n\nIt's 2016 again. No worries, just the music that defined an era. \nWhether you're looking back at the best summer of your life or just miss the vibes, \nthis mix is your time machine.\n\n👀 TRACKLIST:\n{time_stamps}\n\n🔗 Listen on Spotify: https://open.spotify.com/playlist/32LbIgPt2PtDr3CXhQVZdL\n\n#2016 #nostalgia #mixtape #throwback #2016vibes"
+  SoccerEdits:
+    secrets_file: config/client_secrets.json
+    token_file: config/tokens/SoccerEdits_token.json
+    youtube_channel_name: SoccerEdits
+    playlist_id: 32LbIgPt2PtDr3CXhQVZdL
+    tags:
+    - music
+    - mix
+    - sports
+    - soccer
+    - footbal
+    - edits
+    - neymar
+    - messi
+    - mbape
+    - cristiano ronaldo
+    - benzema
+    - haaland
+    posting: public
+    mix_minutes: 14
+    track_limit: 10
+    video_category: 5
+    video_clips: 5
+    video_folders: https://drive.google.com/drive/folders/1ns-kja2T--AhTNnKQzZlC7VQez2-3wRj?usp=sharing
+    title_templates:
+    - FOOTBALL COMPILATION MIX
+    - FOOTBALL MIX EDIT COMPILATION
+    - FOOTBALL HIGHLIGHTS MIXTAPE
     description_template: 'Enjoy this mix!
 
 

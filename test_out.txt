@@ -1,0 +1,9 @@
+Starting visuals download...
+2026-02-04 19:13:11,253 - app - INFO - Listing videos via gdown from: https://drive.google.com/test
+2026-02-04 19:13:11,282 - app - INFO - Found 2 videos in https://drive.google.com/test
+2026-02-04 19:13:11,282 - app - INFO - Selected 2 total videos from aggregated folders.
+2026-02-04 19:13:11,290 - app - INFO - File already exists, skipping download: success_video.mp4
+2026-02-04 19:13:11,291 - app - INFO - File already exists, skipping download: failed_video.mp4
+Test finished. Retrieved 2 paths.
+
+FAILURE: Logic did not handle error correctly. Paths count: 2

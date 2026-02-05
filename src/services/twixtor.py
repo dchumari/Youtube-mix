@@ -17,7 +17,27 @@ class TwixtorProvider:
         Scrapes Twixtor links and downloads them.
         Returns a list of Paths to downloaded clips.
         """
-        logger.info(f"Scraping Twixtors: {num_series} series, {num_clips} clips total.")
+        logger.info(f"Fetching and downloading Twixtors: {num_series} series, {num_clips} clips.")
+        
+        drive_links = self.scrape_drive_links(num_series, num_clips)
+        if not drive_links:
+            return []
+
+        # 4. Download
+        downloaded_paths = []
+        for i, drive_url in enumerate(drive_links):
+            target_path = self.download_folder / f"twixtor_{i + 1}.mp4"
+            path = self._download_from_drive(drive_url, target_path)
+            if path:
+                downloaded_paths.append(path)
+
+        return downloaded_paths
+
+    def scrape_drive_links(self, num_series: int = 5, num_clips: int = 5) -> List[str]:
+        """
+        Scrapes the source website for Google Drive links of Twixtor clips.
+        """
+        logger.info(f"Scraping Twixtor Drive links: {num_series} series, {num_clips} clips max.")
         
         try:
             # 1. Get Categories
@@ -74,15 +94,7 @@ class TwixtorProvider:
                 except Exception as e:
                     logger.warning(f"Failed to scrape post {post_url}: {e}")
 
-            # 4. Download
-            downloaded_paths = []
-            for i, drive_url in enumerate(drive_links):
-                target_path = self.download_folder / f"twixtor_{i + 1}.mp4"
-                path = self._download_from_drive(drive_url, target_path)
-                if path:
-                    downloaded_paths.append(path)
-
-            return downloaded_paths
+            return drive_links
 
         except Exception as e:
             logger.error(f"Twixtor scraping failed: {e}")

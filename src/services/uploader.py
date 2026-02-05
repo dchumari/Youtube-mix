@@ -19,9 +19,10 @@ from ..utils.logger import logger
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 
 class YoutubeUploader:
-    def __init__(self, secrets_file: str, token_file: str):
-        self.secrets_file = Path(secrets_file)
-        self.token_file = Path(token_file)
+    def __init__(self, profile: dict):
+        self.profile = profile
+        self.secrets_file = Path(profile.get("secrets_file", "config/client_secrets.json"))
+        self.token_file = Path(profile.get("token_file", "config/tokens/token.json"))
         self.service = None
 
     def authenticate(self, headless: bool = True):
@@ -46,18 +47,53 @@ class YoutubeUploader:
         # 2. Check validity / Refresh
         if creds and creds.valid:
             logger.info("Using valid cached credentials.")
-        elif creds and creds.expired and creds.refresh_token:
+        elif creds and creds.expired and (creds.refresh_token or self.profile.get("refresh_token")):
             logger.info("Token expired. Refreshing...")
             try:
+                # If we have a manual refresh token but existing creds don't have it, inject it
+                if not creds.refresh_token and self.profile.get("refresh_token"):
+                    creds.refresh_token = self.profile.get("refresh_token")
+                
                 creds.refresh(Request())
                 # Save refreshed token
                 self.token_file.write_text(creds.to_json())
                 logger.info("Token refreshed and saved.")
             except Exception as e:
-                logger.error(f"Failed to refresh token: {e}")
+                error_str = str(e)
+                if "invalid_grant" in error_str:
+                    logger.error("Failed to refresh token: The token has been expired or revoked.")
+                    logger.error("--- ACTION REQUIRED ---")
+                    logger.error("1. Make sure your Google Cloud Project is set to 'In Production' (https://console.cloud.google.com/apis/credentials/consent)")
+                    logger.error("2. Run 'python main.py auth' to re-authenticate.")
+                    logger.error("-----------------------")
+                else:
+                    logger.error(f"Failed to refresh token: {e}")
                 creds = None
         
         # 3. New Login (only if not headless or explicit override)
+        if not creds and self.profile.get("refresh_token"):
+            logger.info("Attempting authentication using manual refresh token from settings...")
+            try:
+                # Create credentials from refresh token
+                import json
+                with open(self.secrets_file, "r") as f:
+                    client_config = json.load(f)
+                
+                creds = Credentials(
+                    token=None,
+                    refresh_token=self.profile.get("refresh_token"),
+                    token_uri="https://oauth2.googleapis.com/token",
+                    client_id=client_config["installed"]["client_id"],
+                    client_secret=client_config["installed"]["client_secret"],
+                    scopes=SCOPES
+                )
+                creds.refresh(Request())
+                self.token_file.write_text(creds.to_json())
+                logger.info("Successfully authenticated with manual refresh token.")
+            except Exception as e:
+                logger.error(f"Manual refresh token auth failed: {e}")
+                creds = None
+
         if not creds:
             if headless:
                  # In headless mode, we cannot open a browser. We must fail.

@@ -13,20 +13,28 @@ class MusicProvider:
 
 class SpotifyProvider(MusicProvider):
     def __init__(self):
-        client_id = os.getenv("SPOTIFY_CLIENT_ID")
-        client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
+        self._sp = None
+        self.client_id = os.getenv("SPOTIFY_CLIENT_ID")
+        self.client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
         
-        if not client_id or not client_secret:
-            logger.error("Spotify credentials not found in environment variables.")
+        if not self.client_id or not self.client_secret:
+            logger.warning("Spotify credentials not found. Spotify features will be unavailable.")
+
+    def _get_client(self):
+        if self._sp:
+            return self._sp
+            
+        if not self.client_id or not self.client_secret:
             raise ValueError("Missing SPOTIFY_CLIENT_ID or SPOTIFY_CLIENT_SECRET. Check your .env file.")
             
         try:
-            self.sp = spotipy.Spotify(
+            self._sp = spotipy.Spotify(
                 auth_manager=SpotifyClientCredentials(
-                    client_id=client_id, client_secret=client_secret
+                    client_id=self.client_id, client_secret=self.client_secret
                 )
             )
             logger.info("Spotify client initialized successfully.")
+            return self._sp
         except Exception as e:
             logger.error(f"Failed to initialize Spotify client: {e}")
             raise
@@ -37,15 +45,16 @@ class SpotifyProvider(MusicProvider):
         Returns a list of dicts with 'name', 'artist', 'duration_ms'.
         """
         try:
+            sp = self._get_client()
             logger.info(f"Fetching playlist: {playlist_id}")
-            playlist = self.sp.playlist(playlist_id)
+            playlist = sp.playlist(playlist_id)
             if not playlist:
                 raise ValueError("Playlist not found")
                 
             playlist_name = playlist.get("name", "Unknown Playlist")
             logger.info(f"Found playlist: {playlist_name}")
 
-            results = self.sp.playlist_items(playlist_id, limit=limit)
+            results = sp.playlist_items(playlist_id, limit=limit)
             if not results:
                 raise ValueError("No items found in playlist")
                 
