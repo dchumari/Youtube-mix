@@ -7,6 +7,7 @@ requires-python = ">=3.11,<3.13"
 dependencies = [
     "beautifulsoup4>=4.14.3",
     "ffmpeg-python>=0.2.0",
+    "gdown>=5.1.0",
     "google-api-python-client>=2.187.0",
     "google-auth-oauthlib>=1.2.3",
     "moviepy>=2.2.1",
@@ -14,6 +15,8 @@ dependencies = [
     "python-dotenv>=1.2.1",
     "pytubefix>=10.3.6",
     "pyyaml>=6.0.3",
+    "questionary>=2.0.1",
+    "rich>=13.7.0",
     "requests>=2.32.5",
     "send2trash>=1.8.3",
     "spotipy>=2.25.2",

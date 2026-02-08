@@ -21,7 +21,8 @@ class App:
         video_category: int = None,
         video_clips: int = None,
         posting: str = None,
-        video_folders: str = None
+        video_folders: str = None,
+        resolution: str = None
     ):
         self.channel_profile = channel_profile
         self.config = self._load_config(config_path)
@@ -39,6 +40,7 @@ class App:
         self.video_clips = video_clips or self.profile.get("video_clips") or self.defaults.get("video_clips", 5)
         self.posting = posting or self.profile.get("posting") or self.defaults.get("posting", "private")
         self.video_folders = video_folders or self.profile.get("video_folders")
+        self.resolution = resolution or self.profile.get("resolution") or self.defaults.get("resolution")
 
         # Initialize Services
         self.music_provider = SpotifyProvider()
@@ -128,7 +130,9 @@ class App:
             mix_folder = Path(self.defaults.get("download_folder", "downloads")) / "output"
             output_file = mix_folder / f"final_mix_{self.channel_profile}.mp4"
             
-            timestamps, mix_file = self.mixer.create_mix(audio_paths, video_paths, output_file)
+            output_file = mix_folder / f"final_mix_{self.channel_profile}.mp4"
+            
+            timestamps, mix_file = self.mixer.create_mix(audio_paths, video_paths, output_file, resolution=self.resolution)
             
             logger.info(f"Mix created at: {mix_file}")
             
@@ -157,6 +161,16 @@ class App:
                 video_title = random.choice(title_templates)
             else:
                 video_title = f"Best Music Mix 2025 - {self.channel_profile.title()} 🎵"
+
+            # Safety check: Ensure title is a string
+            if isinstance(video_title, dict):
+                # If YAML parsed it as a dict (e.g. "Key: Value"), try to reconstruct or use the value
+                # Case: "POV: Title" -> {"POV": "Title"}
+                k, v = list(video_title.items())[0]
+                video_title = f"{k}: {v}"
+                logger.warning(f"Title template was parsed as a dictionary. Reconstructed to: {video_title}")
+            
+            video_title = str(video_title)
 
             video_id = self.uploader.upload_video(
                 file_path=mix_file,

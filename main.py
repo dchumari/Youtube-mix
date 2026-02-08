@@ -3,8 +3,17 @@ import yaml
 from pathlib import Path
 from src.app import App
 from src.utils.logger import logger
+from src.cli.menu import InteractiveMenu
 
 app = typer.Typer(help="YouTube Music Mix Automation Tool")
+
+@app.command()
+def menu():
+    """
+    Launches the interactive CLI menu.
+    """
+    menu = InteractiveMenu()
+    menu.run()
 
 @app.command()
 def run(

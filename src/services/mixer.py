@@ -2,12 +2,18 @@ import random
 import gc
 import os
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from moviepy import VideoFileClip, AudioFileClip, concatenate_videoclips, concatenate_audioclips
 from ..utils.logger import logger
 
 class Mixer:
-    def create_mix(self, audio_paths: List[Path], video_paths: List[Path], output_file: Path) -> Tuple[List[str], Path]:
+    def create_mix(
+        self, 
+        audio_paths: List[Path], 
+        video_paths: List[Path], 
+        output_file: Path,
+        resolution: Optional[str] = None
+    ) -> Tuple[List[str], Path]:
         """
         Creates a video mix from audio tracks and video clips.
         Returns (timestamps, output_file_path).
@@ -29,6 +35,8 @@ class Mixer:
         video_cache = {}  # Cache for unique video clips
         timestamps = []
         total_seconds = 0
+        
+        target_height = self._determine_resolution(resolution, video_paths)
         
         try:
             # 1. Prepare Audio
@@ -70,8 +78,9 @@ class Mixer:
                         logger.info(f"Loading unique video clip: {v_path.name}")
                         clip = VideoFileClip(v_str, audio=False)
                         
-                        # Resize to standard HD (720p) to prevent stride issues and save memory
-                        clip = clip.resized(height=720) # Keep aspect ratio
+                        # Resize to target height
+                        if clip.h != target_height:
+                            clip = clip.resized(height=target_height)
                         
                         # Trim the very end (0.1s) to avoid "bytes wanted but 0 read" errors
                         if clip.duration > 0.1:
@@ -140,6 +149,41 @@ class Mixer:
             # Explicit GC
             gc.collect()
 
+    def _determine_resolution(self, resolution: Optional[str], video_paths: List[Path]) -> int:
+        """Determines the target height (resolution) based on input or video clips."""
+        if resolution:
+            res_str = str(resolution).lower().replace("p", "")
+            res_map = {
+                "720": 720,
+                "1080": 1080,
+                "2k": 1440,
+                "1440": 1440,
+                "4k": 2160,
+                "2160": 2160
+            }
+            target_height = res_map.get(res_str, 720)
+            logger.info(f"User requested resolution: {resolution} -> {target_height}p")
+            return target_height
+
+        logger.info("No resolution specified. Scanning clips for max resolution...")
+        max_h = 0
+        for vp in video_paths:
+            try:
+                # Probe clip resolution without loading full data if possible
+                with VideoFileClip(str(vp), audio=False) as probe:
+                    if probe.h > max_h:
+                        max_h = probe.h
+            except Exception as e:
+                logger.warning(f"Could not probe resolution for {vp}: {e}")
+        
+        if max_h > 0:
+            logger.info(f"Detected max resolution: {max_h}p")
+            return max_h
+            
+        logger.warning("Could not detect resolution. Defaulting to 720p.")
+        return 720
+
     def _seconds_to_hms(self, seconds):
         seconds = int(seconds)
         return f"{seconds // 3600:02d}:{(seconds % 3600) // 60:02d}:{seconds % 60:02d}"
+

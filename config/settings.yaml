@@ -5,6 +5,7 @@ defaults:
   video_category: 2
   video_clips: 5
   posting: private
+  resolution: 1080 # Options: 720, 1080, 2k, 4k. If null, uses max available.
 channels:
   primary:
     secrets_file: config/client_secrets.json
@@ -22,18 +23,18 @@ channels:
     video_clips: 5
     video_folders: https://drive.google.com/drive/folders/1EOe75E5Myn0DzPFSL0hUHoRcTQbv3lsj
     title_templates:
-    - MIX OF THE SUPREME BRAZILIAN PHONK 2025 🎵 Slowed + Reverb
-    - ULTIMATE PHONK SESSION 2025 🔥 Best Brazilian Phonk Mix
-    - MADNESS PHONK MIX 💀 Shot on iPhone | Brazilian Bass
-    - BRAZILIAN PHONK 2025 ⚡ Best Aggressive Music Mix
-    - PHONK MANIA 🎧 Best Brazilian Phonk 2025 High Quality
-    - DARKEST PHONK MIX 🌌 Brazilian Phonk 2025 | Slowed + Reverb
-    - BASS BOOSTED PHONK 🔥 Brazilian Mix 2025
-    - STREET PHONK VIBES 🏙️ Best Aggressive Brazilian Phonk
-    - PHONK NIGHT DRIVE 🏎️ Brazilian Phonk Mix 2025
-    - EVIL PHONK 🧛 Best Brazilian Phonk for Workout
-    - BRAZILIAN PHONK GOD 👑 Most Wanted Tracks 2025
-    - HEAVENLY PHONK 👼 Brazilian Phonk 2025 | High Fidelity
+    - "MIX OF THE SUPREME BRAZILIAN PHONK 2025 🎵 Slowed + Reverb"
+    - "ULTIMATE PHONK SESSION 2025 🔥 Best Brazilian Phonk Mix"
+    - "MADNESS PHONK MIX 💀 Shot on iPhone | Brazilian Bass"
+    - "BRAZILIAN PHONK 2025 ⚡ Best Aggressive Music Mix"
+    - "PHONK MANIA 🎧 Best Brazilian Phonk 2025 High Quality"
+    - "DARKEST PHONK MIX 🌌 Brazilian Phonk 2025 | Slowed + Reverb"
+    - "BASS BOOSTED PHONK 🔥 Brazilian Mix 2025"
+    - "STREET PHONK VIBES 🏙️ Best Aggressive Brazilian Phonk"
+    - "PHONK NIGHT DRIVE 🏎️ Brazilian Phonk Mix 2025"
+    - "EVIL PHONK 🧛 Best Brazilian Phonk for Workout"
+    - "BRAZILIAN PHONK GOD 👑 Most Wanted Tracks 2025"
+    - "HEAVENLY PHONK 👼 Brazilian Phonk 2025 | High Fidelity"
     description_template: 'MIX OF THE SUPREME BRAZILIAN PHONK 2025 | Slowed + Reverb
       + Brazilian Bass 🎵
 
@@ -74,9 +75,9 @@ channels:
     video_category: 2
     video_clips: 5
     title_templates:
-    - Ultimate Gaming Music Mix 🎮 Top 10 Soundtrack
-    - Epic OST Mix for Pro Gaming 🔥 2025
-    - Gaming Sessions Vol. 1 🎧 Best Music
+    - "Ultimate Gaming Music Mix 🎮 Top 10 Soundtrack"
+    - "Epic OST Mix for Pro Gaming 🔥 2025"
+    - "Gaming Sessions Vol. 1 🎧 Best Music"
     description_template: 'Epic Gaming Music Mix! 🎮
 
 
@@ -110,26 +111,26 @@ channels:
     - nostalgia
     - nostalgic music
     title_templates:
-    - POV: It’s 2016 Again
-    - wake up… it’s 2016
-    - you accidentally time-traveled to 2016
-    - it feels like 2016 again
-    - this playlist thinks it’s 2016
-    - you open your old laptop in 2016
-    - somewhere between 2016 and now
-    - you never really left 2016
-    - late night thoughts in 2016
-    - 2016 nostalgia hits different
-    - it’s 2am and suddenly it’s 2016
-    - a playlist for when life felt simpler
-    - you press play and it’s 2016
-    - soft memories from 2016
-    - this feels like a 2016 summer
-    - 2016 but only the good parts
-    - headphones on, back in 2016
-    - you miss 2016 more than you admit
-    - a quiet trip back to 2016
-    - 2016 vibes you forgot about
+    - "POV: It’s 2016 Again"
+    - "wake up… it’s 2016"
+    - "you accidentally time-traveled to 2016"
+    - "it feels like 2016 again"
+    - "this playlist thinks it’s 2016"
+    - "you open your old laptop in 2016"
+    - "somewhere between 2016 and now"
+    - "you never really left 2016"
+    - "late night thoughts in 2016"
+    - "2016 nostalgia hits different"
+    - "it’s 2am and suddenly it’s 2016"
+    - "a playlist for when life felt simpler"
+    - "you press play and it’s 2016"
+    - "soft memories from 2016"
+    - "this feels like a 2016 summer"
+    - "2016 but only the good parts"
+    - "headphones on, back in 2016"
+    - "you miss 2016 more than you admit"
+    - "a quiet trip back to 2016"
+    - "2016 vibes you forgot about"
     description_template: "✨ Close your eyes and let the nostalgia take over. ✨ \n\nIt's 2016 again. No worries, just the music that defined an era. \nWhether you're looking back at the best summer of your life or just miss the vibes, \nthis mix is your time machine.\n\n👀 TRACKLIST:\n{time_stamps}\n\n🔗 Listen on Spotify: https://open.spotify.com/playlist/32LbIgPt2PtDr3CXhQVZdL\n\n#2016 #nostalgia #mixtape #throwback #2016vibes"
   SoccerEdits:
     secrets_file: config/client_secrets.json
@@ -156,9 +157,9 @@ channels:
     video_clips: 5
     video_folders: https://drive.google.com/drive/folders/1ns-kja2T--AhTNnKQzZlC7VQez2-3wRj?usp=sharing
     title_templates:
-    - FOOTBALL COMPILATION MIX
-    - FOOTBALL MIX EDIT COMPILATION
-    - FOOTBALL HIGHLIGHTS MIXTAPE
+    - "FOOTBALL COMPILATION MIX"
+    - "FOOTBALL MIX EDIT COMPILATION"
+    - "FOOTBALL HIGHLIGHTS MIXTAPE"
     description_template: 'Enjoy this mix!
 
 

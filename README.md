@@ -53,35 +53,94 @@ This tool automates the lifecycle of a music curation channel:
     ```
 
 3.  **Configuration**:
-    Edit `config/settings.yaml` to define your channels. Use the `auth` command to add new channels interactively.
+    The tool uses `config/settings.yaml` to manage multiple channels. You can edit this file manually or use the `auth` command to help validatsetup.
+
+## ⚙️ Configuration Guide
+
+The `config/settings.yaml` file is the heart of the automation. You can define multiple channel profiles (e.g., `primary`, `gaming`, `lofi`) with unique settings.
+
+### Channel Profile Options
+
+| Option                 | Description                                            | Example                         |
+| :--------------------- | :----------------------------------------------------- | :------------------------------ |
+| `secrets_file`         | Path to your Google OAuth client secrets.              | `config/client_secrets.json`    |
+| `token_file`           | Path where the authenticated token will be saved.      | `config/tokens/token.json`      |
+| `playlist_id`          | Spotify Playlist ID to source music from.              | `3mAH5gPbw4...`                 |
+| `video_folders`        | Google Drive link(s) for video clips. String or List.  | `https://drive.google.com...`   |
+| `thumbnail_folders`    | Google Drive link(s) for thumbnails.                   | `https://drive.google.com...`   |
+| `mix_minutes`          | Target duration of the final mix in minutes.           | `15`                            |
+| `track_limit`          | Maximum number of tracks to fetch/download.            | `20`                            |
+| `posting`              | Privacy status of the uploaded video.                  | `public`, `private`, `unlisted` |
+| `tags`                 | List of YouTube tags.                                  | `['music', 'mix', '2025']`      |
+| `title_templates`      | List of templates for generating video titles.         | `['Late Night Vibes 🌑']`        |
+| `description_template` | Template for description. Use `{time_stamps}`.         | `Enjoy!\n\n{time_stamps}`       |
+| `video_category`       | (Twixtor) Number of anime/series categories to search. | `3`                             |
+| `video_clips`          | (Twixtor) Number of clips to download per category.    | `5`                             |
+| `refresh_token`        | (Optional) Saved refresh token for auto-auth.          | `1//0e...`                      |
+
+### Example `settings.yaml` structure
+
+```yaml
+defaults:
+  mix_minutes: 10
+  posting: private
+
+channels:
+  primary:
+    secrets_file: config/client_secrets.json
+    playlist_id: 3mAH5gPbw4...
+    video_folders: 
+      - https://drive.google.com/drive/folders/ID_1
+      - https://drive.google.com/drive/folders/ID_2
+    posting: public
+    title_templates: 
+      - "Best Music Mix 2025 🎧"
+    description_template: |
+      Check out this mix!
+      
+      Tracklist:
+      {time_stamps}
+```
 
 ## 🎮 CLI Usage
 
-### 1. Run Automation
+### 1. Run Automation (`run`)
 The main command to fetch, download, mix, and upload.
+
 ```bash
 uv run python main.py run --channel <name> [OPTIONS]
 ```
+
 **Options:**
 -   `--channel`: Channel profile to use (default: `primary`).
--   `--dry`: Perform a dry run (skip upload).
+-   `--dry`: Perform a dry run (skips upload).
 -   `--mix-minutes`: Override mix duration in minutes.
 -   `--track-limit`: Limit the number of tracks fetched.
--   `--video-category`: Number of visual categories to use.
+-   `--video-category`: Number of visual categories to use (Twixtor).
 -   `--video-clips`: Number of clips per category.
--   `--posting`: Privacy status (`public`, `private`, `unlisted`).
+-   `--video-folders`: Override video source with a specific Google Drive link or ID.
+-   `--posting`: Override privacy status (`public`, `private`, `unlisted`).
 
-### 2. Authenticate
-Setup or refresh YouTube API tokens.
+### 2. Authenticate (`auth`)
+Setup or refresh YouTube API tokens. This opens a browser to grant permissions.
+
 ```bash
 uv run python main.py auth --channel <name>
 ```
-*Tip: After auth, the tool will provide a refresh token you can save in `settings.yaml` for persistent access.*
+*Tip: After auth, the tool allows you to save the refresh token to `settings.yaml` for persistent, headless access.*
 
-### 3. Scrape Twixtor Links
-Export Google Drive links for cinematic visual clips.
+### 3. Visual Utilities (`twixtor-links`)
+Export Google Drive links for cinematic visual clips to use in your `video_folders`.
+
 ```bash
 uv run python main.py twixtor-links --num-series 5 --num-clips 10
+```
+
+### 4. Management (`delete-channel`)
+Delete a channel profile from your settings.
+
+```bash
+uv run python main.py delete-channel <name>
 ```
 
 ## 📂 Project Structure
